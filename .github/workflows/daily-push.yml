@@ -1,0 +1,38 @@
+name: 10-Day MCP Progressive Push Automation
+
+on:
+  schedule:
+    # Runs daily at 12:00 UTC (17:30 IST)
+    - cron: '0 12 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub web UI or CLI anytime
+
+permissions:
+  contents: write
+
+jobs:
+  daily-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Configure Git Author
+        run: |
+          git config user.name "rapoleramsai4"
+          git config user.email "rapoleramsai4@gmail.com"
+
+      - name: Execute Daily Progressive Module
+        run: |
+          python3 automation/daily_push.py --ci
+
+      - name: Push Committed Updates
+        run: |
+          git push origin main

@@ -1,0 +1,260 @@
+#!/bin/bash
+set -e
+
+# Source utilities
+source "$(dirname "$0")/utils.sh"
+
+print_header "MCP Quickstart Smoke Tests"
+
+# Get project root
+PROJECT_ROOT=$(get_project_root)
+TESTS_DIR="${PROJECT_ROOT}/tests"
+
+# Setup common test variables
+TEST_CLIENT="${PROJECT_ROOT}/tests/helpers/build/mcp-test-client.js"
+MOCK_SERVER="${PROJECT_ROOT}/tests/helpers/build/mock-mcp-server.js"
+TOOL_LOOP_TEST="${PROJECT_ROOT}/tests/helpers/build/tool-loop-test.js"
+
+# Track test results
+FAILED_TESTS=()
+PASSED_TESTS=()
+
+# Build test helpers
+ensure_helpers_built
+
+# Helper function to run a test and track results
+run_test() {
+    local test_name=$1
+    echo ""
+    print_header "Testing ${test_name}"
+
+    if "${@:2}"; then
+        PASSED_TESTS+=("${test_name}")
+        print_success "${test_name} test passed"
+    else
+        FAILED_TESTS+=("${test_name}")
+        print_error "${test_name} test failed"
+    fi
+}
+
+# Test: Python weather server
+test_weather_server_python() {
+    check_dependency uv || return 1
+    local server_dir="${PROJECT_ROOT}/weather-server-python"
+    node "${TEST_CLIENT}" uv --directory "${server_dir}" run weather.py
+}
+
+# Test: TypeScript weather server
+test_weather_server_typescript() {
+    check_dependency node || return 1
+    check_dependency npm || return 1
+    local server_dir="${PROJECT_ROOT}/weather-server-typescript"
+    ensure_built "${server_dir}" "" || return 1
+    node "${TEST_CLIENT}" node "${server_dir}/build/index.js"
+}
+
+# Test: Rust weather server
+test_weather_server_rust() {
+    check_dependency cargo || return 1
+    local server_dir="${PROJECT_ROOT}/weather-server-rust"
+    ensure_built "${server_dir}" weather || return 1
+
+    # Determine which binary to use
+    local server_bin
+    server_bin=$(resolve_binary "${server_dir}/target/release/weather" \
+        || resolve_binary "${server_dir}/target/debug/weather") || {
+        print_error "no weather binary found in ${server_dir}/target"
+        return 1
+    }
+
+    node "${TEST_CLIENT}" "${server_bin}"
+}
+
+# Test: Go weather server
+test_weather_server_go() {
+    check_dependency go || return 1
+    local server_dir="${PROJECT_ROOT}/weather-server-go"
+    ensure_built "${server_dir}" server || return 1
+
+    local server_bin
+    server_bin=$(resolve_binary "${server_dir}/server") || {
+        print_error "no server binary found in ${server_dir}"
+        return 1
+    }
+
+    node "${TEST_CLIENT}" "${server_bin}"
+}
+
+# Test: Ruby weather server
+test_weather_server_ruby() {
+    check_dependency ruby || return 1
+    check_dependency bundle || return 1
+    local server_dir="${PROJECT_ROOT}/weather-server-ruby"
+    ensure_bundled "${server_dir}" || return 1
+    (cd "${server_dir}" && node "${TEST_CLIENT}" bundle exec ruby weather.rb)
+}
+
+# The client tests drive the no-API-key path, where each client prints a notice
+# and exits. Empty rather than unset: dotenv skips a name already present in
+# ENV, so a key in the environment or a local .env would start the chat loop.
+
+# Test: Python MCP client
+test_mcp_client_python() {
+    check_dependency uv || return 1
+    local client_dir="${PROJECT_ROOT}/mcp-client-python"
+    ANTHROPIC_API_KEY= uv --directory "${client_dir}" run python "${client_dir}/client.py" "${MOCK_SERVER}" >/dev/null 2>&1
+}
+
+# Test: TypeScript MCP client
+test_mcp_client_typescript() {
+    check_dependency node || return 1
+    check_dependency npm || return 1
+    local client_dir="${PROJECT_ROOT}/mcp-client-typescript"
+    ensure_built "${client_dir}" "" || return 1
+    ANTHROPIC_API_KEY= node "${client_dir}/build/index.js" "${MOCK_SERVER}" >/dev/null 2>&1
+}
+
+# Test: Ruby MCP client
+test_mcp_client_ruby() {
+    check_dependency ruby || return 1
+    check_dependency bundle || return 1
+    local client_dir="${PROJECT_ROOT}/mcp-client-ruby"
+    ensure_bundled "${client_dir}" || return 1
+    (cd "${client_dir}" && ANTHROPIC_API_KEY= bundle exec ruby client.rb "${MOCK_SERVER}") >/dev/null 2>&1
+}
+
+# Test: Go MCP client
+test_mcp_client_go() {
+    check_dependency go || return 1
+    local client_dir="${PROJECT_ROOT}/mcp-client-go"
+    ensure_built "${client_dir}" mcp-client-go || return 1
+
+    local client_bin
+    client_bin=$(resolve_binary "${client_dir}/mcp-client-go") || {
+        print_error "no mcp-client-go binary found in ${client_dir}"
+        return 1
+    }
+
+    ANTHROPIC_API_KEY= "${client_bin}" node "${MOCK_SERVER}" >/dev/null 2>&1
+}
+
+# Test: Rust MCP client
+test_mcp_client_rust() {
+    check_dependency cargo || return 1
+    local client_dir="${PROJECT_ROOT}/mcp-client-rust"
+    ensure_built "${client_dir}" mcp-client-rust || return 1
+
+    local client_bin
+    client_bin=$(resolve_binary "${client_dir}/target/release/mcp-client-rust" \
+        || resolve_binary "${client_dir}/target/debug/mcp-client-rust") || {
+        print_error "no mcp-client-rust binary found in ${client_dir}/target"
+        return 1
+    }
+
+    ANTHROPIC_API_KEY= "${client_bin}" node "${MOCK_SERVER}" >/dev/null 2>&1
+}
+
+# The tool-loop tests drive the chat loop itself, which the no-key tests never
+# reach. The helper starts a fake Anthropic API on a loopback port, points the
+# client at it through ANTHROPIC_BASE_URL, and types three queries at the
+# client's prompt: two parallel tool calls then a failing one, exactly ten
+# tool turns then an answer, and tool calls past the turn limit. It checks
+# every request the client sends; see tests/README.md for what is checked.
+
+# Test: Python MCP client tool loop
+test_tool_loop_python() {
+    check_dependency uv || return 1
+    local client_dir="${PROJECT_ROOT}/mcp-client-python"
+    node "${TOOL_LOOP_TEST}" uv --directory "${client_dir}" run python "${client_dir}/client.py" "${MOCK_SERVER}"
+}
+
+# Test: TypeScript MCP client tool loop
+test_tool_loop_typescript() {
+    check_dependency node || return 1
+    check_dependency npm || return 1
+    local client_dir="${PROJECT_ROOT}/mcp-client-typescript"
+    ensure_built "${client_dir}" "" || return 1
+    node "${TOOL_LOOP_TEST}" node "${client_dir}/build/index.js" "${MOCK_SERVER}"
+}
+
+# Test: Ruby MCP client tool loop
+test_tool_loop_ruby() {
+    check_dependency ruby || return 1
+    check_dependency bundle || return 1
+    local client_dir="${PROJECT_ROOT}/mcp-client-ruby"
+    ensure_bundled "${client_dir}" || return 1
+    (cd "${client_dir}" && node "${TOOL_LOOP_TEST}" bundle exec ruby client.rb "${MOCK_SERVER}")
+}
+
+# Test: Go MCP client tool loop
+test_tool_loop_go() {
+    check_dependency go || return 1
+    local client_dir="${PROJECT_ROOT}/mcp-client-go"
+    ensure_built "${client_dir}" mcp-client-go || return 1
+
+    local client_bin
+    client_bin=$(resolve_binary "${client_dir}/mcp-client-go") || {
+        print_error "no mcp-client-go binary found in ${client_dir}"
+        return 1
+    }
+
+    node "${TOOL_LOOP_TEST}" "${client_bin}" node "${MOCK_SERVER}"
+}
+
+# Test: Rust MCP client tool loop
+test_tool_loop_rust() {
+    check_dependency cargo || return 1
+    local client_dir="${PROJECT_ROOT}/mcp-client-rust"
+    ensure_built "${client_dir}" mcp-client-rust || return 1
+
+    local client_bin
+    client_bin=$(resolve_binary "${client_dir}/target/release/mcp-client-rust" \
+        || resolve_binary "${client_dir}/target/debug/mcp-client-rust") || {
+        print_error "no mcp-client-rust binary found in ${client_dir}/target"
+        return 1
+    }
+
+    node "${TOOL_LOOP_TEST}" "${client_bin}" node "${MOCK_SERVER}"
+}
+
+# Run all tests
+
+print_header "Running smoke tests"
+run_test "weather-server-python" test_weather_server_python
+run_test "weather-server-typescript" test_weather_server_typescript
+run_test "weather-server-rust" test_weather_server_rust
+run_test "weather-server-go" test_weather_server_go
+run_test "weather-server-ruby" test_weather_server_ruby
+run_test "mcp-client-python" test_mcp_client_python
+run_test "mcp-client-typescript" test_mcp_client_typescript
+run_test "mcp-client-ruby" test_mcp_client_ruby
+run_test "mcp-client-go" test_mcp_client_go
+run_test "mcp-client-rust" test_mcp_client_rust
+run_test "mcp-client-python tool loop" test_tool_loop_python
+run_test "mcp-client-typescript tool loop" test_tool_loop_typescript
+run_test "mcp-client-ruby tool loop" test_tool_loop_ruby
+run_test "mcp-client-go tool loop" test_tool_loop_go
+run_test "mcp-client-rust tool loop" test_tool_loop_rust
+
+# Print summary
+echo ""
+print_header "Test Summary"
+echo "Passed: ${#PASSED_TESTS[@]}"
+for test in "${PASSED_TESTS[@]}"; do
+    print_success "${test}"
+done
+
+if [ ${#FAILED_TESTS[@]} -gt 0 ]; then
+    echo ""
+    echo "Failed: ${#FAILED_TESTS[@]}"
+    for test in "${FAILED_TESTS[@]}"; do
+        print_error "${test}"
+    done
+    echo ""
+    print_error "Some tests failed"
+    exit 1
+else
+    echo ""
+    print_success "All tests passed!"
+    exit 0
+fi

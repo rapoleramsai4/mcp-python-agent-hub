@@ -1,0 +1,22 @@
+[package]
+name = "mcp-client-rust"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+jsonschema = "0.56"
+# Only the client half of rmcp is needed, over a child-process stdio transport.
+rmcp = { version = "3.4", features = [
+    "client",
+    "transport-io",
+    "transport-child-process",
+], default-features = false }
+# There is no official Anthropic SDK for Rust, so the Messages API is called
+# directly. That also keeps the provider's content blocks verbatim, which
+# matters for signed thinking blocks; see request_model.
+reqwest = { version = "0.13", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.151"
+tokio = { version = "1.53", features = ["full"] }
+dotenvy = "0.15.7"

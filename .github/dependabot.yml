@@ -1,0 +1,96 @@
+# Keep every example's dependencies current.
+#
+# These examples are the companion code for two official tutorials, so a reader
+# copying from them should be copying current SDK usage. One ecosystem entry per
+# language, plus the Node test helpers and the workflow actions.
+version: 2
+updates:
+  - package-ecosystem: uv
+    directories:
+      - /mcp-client-python
+      - /weather-server-python
+    schedule:
+      interval: weekly
+    groups:
+      python:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: npm
+    directories:
+      - /mcp-client-typescript
+      - /weather-server-typescript
+      - /tests/helpers
+    schedule:
+      interval: weekly
+    # @types/node tracks the minimum supported Node version (24, the oldest LTS
+    # these examples support), not the latest release. Bump its major by hand
+    # when raising that minimum across all npm directories.
+    ignore:
+      - dependency-name: "@types/node"
+        update-types:
+          - version-update:semver-major
+    groups:
+      npm:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: gomod
+    directories:
+      - /mcp-client-go
+      - /weather-server-go
+    schedule:
+      interval: weekly
+    groups:
+      go:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: cargo
+    directories:
+      - /mcp-client-rust
+      - /weather-server-rust
+    schedule:
+      interval: weekly
+    groups:
+      cargo:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: bundler
+    directories:
+      - /mcp-client-ruby
+      - /weather-server-ruby
+    schedule:
+      interval: weekly
+    groups:
+      bundler:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
