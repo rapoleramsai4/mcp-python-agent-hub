@@ -30,3 +30,4 @@ target
 
 # JetBrains IDEs
 .idea
+automation/cron.log

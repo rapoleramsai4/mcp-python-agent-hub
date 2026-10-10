@@ -12,6 +12,11 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+
+# Ensure repository root is on sys.path so 'automation' and 'mcp_agent_hub' packages can always be imported
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 STATE_FILE = REPO_ROOT / ".automation" / "state.json"
 PROGRESS_FILE = REPO_ROOT / "PROGRESS.md"
 CHANGELOG_FILE = REPO_ROOT / "CHANGELOG.md"
@@ -64,7 +69,7 @@ def update_changelog_file(day: int, title: str, summary: str, date_str: str):
     current_text = CHANGELOG_FILE.read_text()
     insert_marker = "<!-- CHANGELOG_ENTRIES -->"
     if insert_marker in current_text:
-        updated = current_text.replace(insert_marker, f"{insert_marker}\\n{entry.strip()}")
+        updated = current_text.replace(insert_marker, f"{insert_marker}\n{entry.strip()}")
     else:
         updated = current_text + "\n" + entry.strip()
     CHANGELOG_FILE.write_text(updated)
