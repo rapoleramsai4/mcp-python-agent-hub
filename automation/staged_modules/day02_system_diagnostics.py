@@ -79,8 +79,8 @@ __all__ = [
 
 def apply(repo_root: Path):
     diag_file = repo_root / "mcp_agent_hub" / "tools" / "diagnostics.py"
-    diag_file.write_text(CODE_DIAGNOSTICS.strip() + "\\n")
+    diag_file.write_text(CODE_DIAGNOSTICS.strip() + "\n")
 
     init_file = repo_root / "mcp_agent_hub" / "tools" / "__init__.py"
-    init_file.write_text(CODE_TOOLS_INIT.strip() + "\\n")
+    init_file.write_text(CODE_TOOLS_INIT.strip() + "\n")
     return "Added diagnostics.py and updated tool registry with hardware, disk, and network tools."

@@ -3,7 +3,7 @@ Day 7 Staged Module: Interactive Terminal MCP Client
 """
 from pathlib import Path
 
-CODE_CLIENT = '''"""
+CODE_CLIENT = r'''"""
 Interactive Terminal Client for Model Context Protocol.
 Connects to MCP servers over stdio and executes tool calls interactively.
 """
@@ -35,7 +35,7 @@ class MCPStdioClient:
             "params": params or {},
         }
         self.req_id += 1
-        line = json.dumps(msg) + "\\n"
+        line = json.dumps(msg) + "\n"
         self.process.stdin.write(line.encode())
         await self.process.stdin.drain()
 
@@ -63,11 +63,11 @@ async def interactive_repl():
 
     tools_res = await client.send_request("tools/list")
     tools = tools_res.get("result", {}).get("tools", [])
-    print(f"\\nAvailable Tools ({len(tools)}):")
+    print(f"\nAvailable Tools ({len(tools)}):")
     for t in tools:
         print(f"  • {t.get('name')}: {t.get('description', '')[:60]}")
 
-    print("\\nReady. Type 'call <tool_name> <json_args>' or 'exit' to quit.")
+    print("\nReady. Type 'call <tool_name> <json_args>' or 'exit' to quit.")
     await client.close()
 
 if __name__ == "__main__":
@@ -78,6 +78,6 @@ def apply(repo_root: Path):
     client_dir = repo_root / "mcp_agent_hub" / "client"
     client_dir.mkdir(parents=True, exist_ok=True)
     
-    (client_dir / "__init__.py").write_text('"""MCP Client package."""\\n')
-    (client_dir / "interactive_client.py").write_text(CODE_CLIENT.strip() + "\\n")
+    (client_dir / "__init__.py").write_text('"""MCP Client package."""\n')
+    (client_dir / "interactive_client.py").write_text(CODE_CLIENT.strip() + "\n")
     return "Added mcp_agent_hub/client/interactive_client.py for interactive stdio testing."

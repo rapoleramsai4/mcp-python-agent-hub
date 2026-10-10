@@ -58,5 +58,5 @@ def apply(repo_root: Path):
     tests_dir = repo_root / "tests"
     tests_dir.mkdir(parents=True, exist_ok=True)
     
-    (tests_dir / "test_agent_hub.py").write_text(CODE_TESTS.strip() + "\\n")
+    (tests_dir / "test_agent_hub.py").write_text(CODE_TESTS.strip() + "\n")
     return "Added tests/test_agent_hub.py covering server startup, tools, resources, and error handling."

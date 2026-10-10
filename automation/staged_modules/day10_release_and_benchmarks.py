@@ -50,5 +50,5 @@ if __name__ == "__main__":
 def apply(repo_root: Path):
     bench_dir = repo_root / "benchmarks"
     bench_dir.mkdir(parents=True, exist_ok=True)
-    (bench_dir / "benchmark_mcp.py").write_text(BENCHMARK_CODE.strip() + "\\n")
+    (bench_dir / "benchmark_mcp.py").write_text(BENCHMARK_CODE.strip() + "\n")
     return "Added benchmarks/benchmark_mcp.py, completed the 10-Day MCP progressive cycle, and finalized Release v1.0.0."

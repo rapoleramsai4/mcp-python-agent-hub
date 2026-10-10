@@ -47,7 +47,7 @@ CLAUDE_CONFIG = '''{
 '''
 
 def apply(repo_root: Path):
-    (repo_root / "Dockerfile").write_text(DOCKERFILE.strip() + "\\n")
-    (repo_root / "docker-compose.yml").write_text(DOCKER_COMPOSE.strip() + "\\n")
-    (repo_root / "claude_desktop_config.json").write_text(CLAUDE_CONFIG.strip() + "\\n")
+    (repo_root / "Dockerfile").write_text(DOCKERFILE.strip() + "\n")
+    (repo_root / "docker-compose.yml").write_text(DOCKER_COMPOSE.strip() + "\n")
+    (repo_root / "claude_desktop_config.json").write_text(CLAUDE_CONFIG.strip() + "\n")
     return "Added Dockerfile, docker-compose.yml, and claude_desktop_config.json for instant Claude Desktop & Cursor integration."

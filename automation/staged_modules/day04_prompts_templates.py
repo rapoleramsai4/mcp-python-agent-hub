@@ -57,8 +57,8 @@ __all__ = [
 
 def apply(repo_root: Path):
     prompt_file = repo_root / "mcp_agent_hub" / "prompts" / "templates.py"
-    prompt_file.write_text(CODE_PROMPTS.strip() + "\\n")
+    prompt_file.write_text(CODE_PROMPTS.strip() + "\n")
 
     init_file = repo_root / "mcp_agent_hub" / "prompts" / "__init__.py"
-    init_file.write_text(CODE_PROMPTS_INIT.strip() + "\\n")
+    init_file.write_text(CODE_PROMPTS_INIT.strip() + "\n")
     return "Added templates.py and registered system_troubleshooting and code_review prompt templates."

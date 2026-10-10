@@ -87,7 +87,7 @@ def apply(repo_root: Path):
     sec_dir = repo_root / "mcp_agent_hub" / "security"
     sec_dir.mkdir(parents=True, exist_ok=True)
     
-    (sec_dir / "validator.py").write_text(CODE_VALIDATOR.strip() + "\\n")
-    (sec_dir / "rate_limiter.py").write_text(CODE_RATE_LIMITER.strip() + "\\n")
-    (sec_dir / "__init__.py").write_text(CODE_SECURITY_INIT.strip() + "\\n")
+    (sec_dir / "validator.py").write_text(CODE_VALIDATOR.strip() + "\n")
+    (sec_dir / "rate_limiter.py").write_text(CODE_RATE_LIMITER.strip() + "\n")
+    (sec_dir / "__init__.py").write_text(CODE_SECURITY_INIT.strip() + "\n")
     return "Added security validation package with path guards, input sanitizers, and sliding-window rate limiter."

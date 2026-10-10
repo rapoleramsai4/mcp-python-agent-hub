@@ -67,6 +67,6 @@ def apply(repo_root: Path):
     cache_dir = repo_root / "mcp_agent_hub" / "caching"
     cache_dir.mkdir(parents=True, exist_ok=True)
     
-    (cache_dir / "__init__.py").write_text('from mcp_agent_hub.caching.cache_manager import global_cache, cached_mcp_tool\\n__all__ = ["global_cache", "cached_mcp_tool"]\\n')
-    (cache_dir / "cache_manager.py").write_text(CODE_CACHE.strip() + "\\n")
+    (cache_dir / "__init__.py").write_text('from mcp_agent_hub.caching.cache_manager import global_cache, cached_mcp_tool\n__all__ = ["global_cache", "cached_mcp_tool"]\n')
+    (cache_dir / "cache_manager.py").write_text(CODE_CACHE.strip() + "\n")
     return "Added in-memory TTL caching and latency profiling decorators to optimize MCP tool invocations."

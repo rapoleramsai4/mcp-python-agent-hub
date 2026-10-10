@@ -68,8 +68,8 @@ __all__ = [
 
 def apply(repo_root: Path):
     res_file = repo_root / "mcp_agent_hub" / "resources" / "system_resources.py"
-    res_file.write_text(CODE_RESOURCES.strip() + "\\n")
+    res_file.write_text(CODE_RESOURCES.strip() + "\n")
 
     init_file = repo_root / "mcp_agent_hub" / "resources" / "__init__.py"
-    init_file.write_text(CODE_RESOURCES_INIT.strip() + "\\n")
+    init_file.write_text(CODE_RESOURCES_INIT.strip() + "\n")
     return "Added system_resources.py and registered system://metrics, logs://system, and config://active MCP resources."
