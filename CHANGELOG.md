@@ -5,6 +5,9 @@ All notable changes to this project are documented in this file across the 10-da
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 <!-- CHANGELOG_ENTRIES -->
+## [Day 3] - 2026-10-10
+### Added
+- **Dynamic MCP Context Resources & System Log Streams**: Added system_resources.py and registered system://metrics, logs://system, and config://active MCP resources.
 ## [Day 2] - 2026-10-10
 ### Added
 - **System Diagnostics & Real-time Health Inspector Tools**: Added diagnostics.py and updated tool registry with hardware, disk, and network tools.
