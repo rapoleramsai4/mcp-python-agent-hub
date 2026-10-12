@@ -5,6 +5,9 @@ All notable changes to this project are documented in this file across the 10-da
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 <!-- CHANGELOG_ENTRIES -->
+## [Day 5] - 2026-10-12
+### Added
+- **Enterprise Security Layer: Input Sanitization, Guardrails & Rate Limiting**: Added security validation package with path guards, input sanitizers, and sliding-window rate limiter.
 ## [Day 4] - 2026-10-11
 ### Added
 - **Interactive Prompt Templates & Troubleshooting Workflows**: Added templates.py and registered system_troubleshooting and code_review prompt templates.
