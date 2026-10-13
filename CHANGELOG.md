@@ -5,6 +5,9 @@ All notable changes to this project are documented in this file across the 10-da
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 <!-- CHANGELOG_ENTRIES -->
+## [Day 6] - 2026-10-13
+### Added
+- **Comprehensive Pytest Suite & Automated Conformance Testing**: Added tests/test_agent_hub.py covering server startup, tools, resources, and error handling.
 ## [Day 5] - 2026-10-12
 ### Added
 - **Enterprise Security Layer: Input Sanitization, Guardrails & Rate Limiting**: Added security validation package with path guards, input sanitizers, and sliding-window rate limiter.
