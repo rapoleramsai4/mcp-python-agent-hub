@@ -5,6 +5,9 @@ All notable changes to this project are documented in this file across the 10-da
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 <!-- CHANGELOG_ENTRIES -->
+## [Day 7] - 2026-10-14
+### Added
+- **Interactive Terminal MCP Client & Autonomous Agent Sandbox**: Added mcp_agent_hub/client/interactive_client.py for interactive stdio testing.
 ## [Day 6] - 2026-10-13
 ### Added
 - **Comprehensive Pytest Suite & Automated Conformance Testing**: Added tests/test_agent_hub.py covering server startup, tools, resources, and error handling.
