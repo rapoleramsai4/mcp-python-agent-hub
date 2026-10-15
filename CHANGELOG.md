@@ -5,6 +5,9 @@ All notable changes to this project are documented in this file across the 10-da
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 <!-- CHANGELOG_ENTRIES -->
+## [Day 8] - 2026-10-15
+### Added
+- **High-Performance In-Memory Cache with TTL & Latency Telemetry**: Added in-memory TTL caching and latency profiling decorators to optimize MCP tool invocations.
 ## [Day 7] - 2026-10-14
 ### Added
 - **Interactive Terminal MCP Client & Autonomous Agent Sandbox**: Added mcp_agent_hub/client/interactive_client.py for interactive stdio testing.
