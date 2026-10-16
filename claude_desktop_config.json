@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "mcp-agent-hub": {
+      "command": "python3",
+      "args": ["-m", "mcp_agent_hub.cli", "--run"],
+      "env": {
+        "MCP_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
